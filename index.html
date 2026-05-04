@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Chapéu Seletor de Hogwarts</title>
+    <style>
+        :root {
+            --cor-chapeu: #4b3621;
+            --cor-sombra: #2d1e12;
+            --gold: #d4af37;
+            --grifinoria: #ae0001;
+            --sonserina: #2a623d;
+            --corvinal: #222f5b;
+            --lufalufa: #f0c75e;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #f0e6d2;
+            font-family: 'Segoe UI', 'Georgia', serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* --- Header Responsivo --- */
+        header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+            border-bottom: 2px solid var(--gold);
+            text-align: center;
+        }
+
+        .logo { width: 40px; margin-bottom: 10px; filter: sepia(1) brightness(0.9); }
+        header h1 { font-size: 1.1rem; color: var(--gold); letter-spacing: 2px; margin: 0; }
+
+        /* --- O Chapéu (Ajustado para Mobile) --- */
+        .palco {
+            position: relative;
+            height: 260px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            transform: scale(0.9); /* Reduz um pouco para telas menores */
+        }
+
+        .chapeu-vivo {
+            position: relative;
+            animation: flutuar 4s infinite ease-in-out;
+            z-index: 10;
+        }
+
+        .aba {
+            width: 250px; height: 40px; background: var(--cor-chapeu);
+            border-radius: 50%; position: absolute; bottom: 20px;
+            left: 50%; transform: translateX(-50%);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-bottom: 5px solid var(--cor-sombra);
+        }
+
+        .corpo {
+            width: 160px; height: 200px; background: var(--cor-chapeu);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            position: relative; top: 25px;
+        }
+
+        .dobra { position: absolute; background: var(--cor-sombra); border-radius: 50%; }
+        .olho { width: 30px; height: 15px; top: 120px; }
+        .olho.esq { left: 40px; transform: rotate(-20deg); }
+        .olho.dir { right: 40px; transform: rotate(20deg); }
+        .boca { width: 60px; height: 20px; top: 160px; left: 50%; transform: translateX(-50%); border-radius: 0 0 50% 50%; }
+
+        @keyframes flutuar {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        .pensando { animation: vibrar 0.2s infinite; }
+        @keyframes vibrar {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -2px); }
+            100% { transform: translate(1px, -1px); }
+        }
+
+        /* --- Interface e Resultado --- */
+        .interface { 
+            padding: 0 20px;
+            text-align: center; 
+            width: 100%; 
+            max-width: 500px; 
+            box-sizing: border-box;
+        }
+
+        #fala { font-style: italic; color: #aaa; margin: 20px 0; min-height: 48px; }
+        
+        button {
+            background: transparent; border: 2px solid var(--gold); color: var(--gold);
+            padding: 12px 30px; font-size: 1rem; cursor: pointer; border-radius: 30px;
+            text-transform: uppercase; font-weight: bold; transition: 0.3s;
+        }
+        button:hover { background: var(--gold); color: #0a0a0a; }
+
+        /* Card de Descrição */
+        #card-resultado {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #nome-casa { font-size: 2rem; font-weight: bold; margin-bottom: 10px; display: block; }
+        #desc-casa { line-height: 1.6; font-size: 1rem; color: #dcdcdc; }
+
+        .GRIFINÓRIA { color: var(--grifinoria); }
+        .SONSERINA { color: var(--sonserina); }
+        .CORVINAL { color: var(--corvinal); }
+        .LUFA-LUFA { color: var(--lufalufa); }
+
+        #reset { margin-top: 20px; color: var(--gold); cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
+
+        /* Ajustes para Desktop */
+        @media (min-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .palco { transform: scale(1.1); height: 320px; }
+            #nome-casa { font-size: 2.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="logo.png" class="logo">
+        <h1>ESCOLA DE MAGIA E BRUXARIA DE HOGWARTS</h1>
+    </header>
+
+    <div class="palco">
+        <div id="chapeu" class="chapeu-vivo">
+            <div class="corpo">
+                <div class="dobra olho esq"></div>
+                <div class="dobra olho dir"></div>
+                <div id="boca" class="dobra boca"></div>
+            </div>
+            <div class="aba"></div>
+        </div>
+    </div>
+
+    <div class="interface">
+        <p id="fala">"Aproxime-se, jovem bruxo(a)... deixe-me ler seus pensamentos."</p>
+        
+        <div id="secao-acao">
+            <button onclick="iniciarSelecao()">Colocar o Chapéu</button>
+        </div>
+
+        <div id="card-resultado">
+            <span id="nome-casa"></span>
+            <p id="desc-casa"></p>
+            <div id="reset" onclick="reiniciar()">por Igor Reis</div>
+        </div>
+    </div>
+  
+    <script>
+        const infoCasas = {
+            "GRIFINÓRIA": "Conhecida por sua coragem, bravura e determinação. Seus membros são ousados e tendem a agir pelo que é certo, custe o que custar.",
+            "SONSERINA": "Valoriza a ambição, astúcia e liderança. Seus alunos são estrategistas e usam qualquer meio para atingir seus objetivos e proteger os seus.",
+            "CORVINAL": "Onde habitam aqueles de inteligência aguçada, sabedoria e criatividade. Valorizam o aprendizado acima de tudo.",
+            "LUFA-LUFA": "Famosa pela lealdade, paciência e trabalho árduo. Seus membros são justos, gentis e não temem o esforço para ajudar os outros."
+        };
+
+        const frasesPensando = [
+            "Hmm... difícil... muito difícil...",
+            "Vejo coragem aqui... e uma mente nada má...",
+            "Muita astúcia, estou vendo...",
+            "Interessante... onde você se encaixaria?",
+            "Um talento extraordinário, oh sim!"
+        ];
+
+        window.onload = () => {
+            const salvo = localStorage.getItem('casaHogwarts');
+            if (salvo) exibirFinal(salvo);
+        };
+
+        function iniciarSelecao() {
+            const fala = document.getElementById('fala');
+            const chapeu = document.getElementById('chapeu');
+            const btn = document.querySelector('button');
+            
+            btn.style.display = 'none';
+            chapeu.classList.add('pensando');
+
+            let fraseInterval = setInterval(() => {
+                fala.innerText = `"${frasesPensando[Math.floor(Math.random() * frasesPensando.length)]}"`;
+            }, 1500);
+
+            setTimeout(() => {
+                clearInterval(fraseInterval);
+                const casas = Object.keys(infoCasas);
+                const casaSorteada = casas[Math.floor(Math.random() * casas.length)];
+                localStorage.setItem('casaHogwarts', casaSorteada);
+                exibirFinal(casaSorteada);
+            }, 4000);
+        }
+
+        function exibirFinal(casa) {
+            const chapeu = document.getElementById('chapeu');
+            const fala = document.getElementById('fala');
+            const card = document.getElementById('card-resultado');
+            const nomeCasa = document.getElementById('nome-casa');
+            const descCasa = document.getElementById('desc-casa');
+            
+            chapeu.classList.remove('pensando');
+            document.querySelector('button').style.display = 'none';
+            
+            fala.innerText = "Já me decidi! Você pertence à...";
+            card.style.display = 'block';
+            nomeCasa.innerText = casa;
+            nomeCasa.className = casa;
+            descCasa.innerText = infoCasas[casa];
+        }
+
+        function reiniciar() {
+            localStorage.removeItem('casaHogwarts');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
