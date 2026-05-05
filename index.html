@@ -41,94 +41,103 @@
     </div>
   
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxzMWBXk3tWonJfdrqVuRo8mivSZqitqwjjSUlp8ziDYYOsgfGykM5GG7zMnvsopXeRjw/exec'; // <--- IMPORTANTE
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxzMWBXk3tWonJfdrqVuRo8mivSZqitqwjjSUlp8ziDYYOsgfGykM5GG7zMnvsopXeRjw/exec';
 
-const infoCasas = {
-    "GRIFINÓRIA": "Conhecida por sua coragem, bravura e determinação...",
-    "SONSERINA": "Valoriza a ambição, astúcia e liderança...",
-    "CORVINAL": "Onde habitam aqueles de inteligência aguçada...",
-    "LUFA-LUFA": "Famosa pela lealdade, paciência e trabalho árduo..."
-};
+    const infoCasas = {
+        "GRIFINÓRIA": "Conhecida por sua coragem, bravura e determinação...",
+        "SONSERINA": "Valoriza a ambição, astúcia e liderança...",
+        "CORVINAL": "Onde habitam aqueles de inteligência aguçada...",
+        "LUFA-LUFA": "Famosa pela lealdade, paciência e trabalho árduo..."
+    };
 
-const frasesPensando = [
-    "Hmm... difícil... muito difícil...",
-    "Vejo coragem aqui...",
-    "Interessante... onde você se encaixaria?",
-    "Um talento extraordinário, oh sim!"
-];
+    const frasesPensando = [
+        "Hmm... difícil... muito difícil...",
+        "Vejo coragem aqui...",
+        "Interessante... onde você se encaixaria?",
+        "Um talento extraordinário, oh sim!"
+    ];
 
-function iniciarSelecao() {
-    const nomeInput = document.getElementById('nome-aluno');
-    const nome = nomeInput.value.trim();
+    // --- ONDE A MÁGICA ACONTECE: VERIFICAÇÃO AO CARREGAR ---
+    window.onload = () => {
+        const casaSalva = localStorage.getItem('casaHogwarts');
+        if (casaSalva) {
+            exibirFinal(casaSalva);
+            document.getElementById('fala').innerText = "O destino já foi traçado! Você já foi selecionado.";
+        }
+    };
 
-    if (nome === "") {
-        alert("Por favor, diga seu nome antes de colocar o chapéu!");
-        return;
+    function iniciarSelecao() {
+        const nomeInput = document.getElementById('nome-aluno');
+        const nome = nomeInput.value.trim();
+
+        if (nome === "") {
+            alert("Por favor, diga seu nome antes de colocar o chapéu!");
+            return;
+        }
+
+        const fala = document.getElementById('fala');
+        const chapeu = document.getElementById('chapeu');
+        const btn = document.querySelector('button');
+        const secaoNome = document.getElementById('campo-nome');
+        
+        btn.style.display = 'none';
+        secaoNome.style.display = 'none';
+        chapeu.classList.add('pensando');
+
+        let fraseInterval = setInterval(() => {
+            fala.innerText = `"${frasesPensando[Math.floor(Math.random() * frasesPensando.length)]}"`;
+        }, 1500);
+
+        setTimeout(() => {
+            clearInterval(fraseInterval);
+            const casas = Object.keys(infoCasas);
+            const casaSorteada = casas[Math.floor(Math.random() * casas.length)];
+            
+            // Salva no navegador para nunca mais sair
+            localStorage.setItem('casaHogwarts', casaSorteada);
+            
+            exibirFinal(casaSorteada);
+            enviarParaPlanilha(nome, casaSorteada);
+        }, 4000);
     }
 
-    const fala = document.getElementById('fala');
-    const chapeu = document.getElementById('chapeu');
-    const btn = document.querySelector('button');
-    const secaoNome = document.getElementById('campo-nome');
-    
-    btn.style.display = 'none';
-    secaoNome.style.display = 'none';
-    chapeu.classList.add('pensando');
+    function enviarParaPlanilha(nome, casa) {
+        const horario = new Date().toLocaleString('pt-BR');
+        const formData = new FormData();
+        formData.append('nome', nome);
+        formData.append('casa', casa);
+        formData.append('horario', horario);
 
-    let fraseInterval = setInterval(() => {
-        fala.innerText = `"${frasesPensando[Math.floor(Math.random() * frasesPensando.length)]}"`;
-    }, 1500);
+        fetch(scriptURL, { method: 'POST', body: formData})
+            .then(res => console.log('Dados enviados para o Ministério da Magia!'))
+            .catch(err => console.error('Erro ao enviar:', err));
+    }
 
-    setTimeout(() => {
-        clearInterval(fraseInterval);
-        const casas = Object.keys(infoCasas);
-        const casaSorteada = casas[Math.floor(Math.random() * casas.length)];
+    function exibirFinal(casa) {
+        const chapeu = document.getElementById('chapeu');
+        const fala = document.getElementById('fala');
+        const card = document.getElementById('card-resultado');
+        const nomeCasa = document.getElementById('nome-casa');
+        const descCasa = document.getElementById('desc-casa');
+        const secaoNome = document.getElementById('campo-nome');
+        const btn = document.querySelector('button');
         
-        // Salva e Exibe
-        localStorage.setItem('casaHogwarts', casaSorteada);
-        exibirFinal(casaSorteada);
+        // Garante que tudo o que for de "input" suma
+        if(secaoNome) secaoNome.style.display = 'none';
+        if(btn) btn.style.display = 'none';
         
-        // ENVIA PARA A PLANILHA
-        enviarParaPlanilha(nome, casaSorteada);
-    }, 4000);
-}
-
-function enviarParaPlanilha(nome, casa) {
-    const horario = new Date().toLocaleString('pt-BR');
-    
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('casa', casa);
-    formData.append('horario', horario);
-
-    fetch(scriptURL, { method: 'POST', body: formData})
-        .then(res => console.log('Dados enviados para o Ministério da Magia!'))
-        .catch(err => console.error('Erro ao enviar:', err));
-}
-
-function exibirFinal(casa) {
-    const chapeu = document.getElementById('chapeu');
-    const fala = document.getElementById('fala');
-    const card = document.getElementById('card-resultado');
-    const nomeCasa = document.getElementById('nome-casa');
-    const descCasa = document.getElementById('desc-casa');
-    const secaoNome = document.getElementById('campo-nome');
-    
-    if(secaoNome) secaoNome.style.display = 'none';
-    chapeu.classList.remove('pensando');
-    document.querySelector('button').style.display = 'none';
-    
-    fala.innerText = "Já me decidi! Você pertence à...";
-    card.style.display = 'block';
-    nomeCasa.innerText = casa;
-    nomeCasa.className = casa;
-    descCasa.innerText = infoCasas[casa];
-}
-
-function reiniciar() {
-    localStorage.removeItem('casaHogwarts');
-    location.reload();
-}
-    </script>
+        chapeu.classList.remove('pensando');
+        
+        fala.innerText = "Já me decidi! Você pertence à...";
+        card.style.display = 'block';
+        nomeCasa.innerText = casa;
+        nomeCasa.className = casa;
+        descCasa.innerText = infoCasas[casa];
+    }
+    function reiniciar() {
+        localStorage.removeItem('casaHogwarts');
+        location.reload();
+    }
+</script>
 </body>
 </html>
