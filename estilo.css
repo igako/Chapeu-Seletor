@@ -58,7 +58,7 @@
     position: relative;
     animation: flutuar 4s infinite ease-in-out;
     z-index: 10;
-    width: 250px; /* Ajuste o tamanho conforme seu GIF */
+    width: 200px; /* Ajuste o tamanho do GIF */
     height: auto;
     display: flex;
     justify-content: center;
